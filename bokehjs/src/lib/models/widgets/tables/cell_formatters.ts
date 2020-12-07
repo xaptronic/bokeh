@@ -6,7 +6,7 @@ import * as p from "core/properties"
 import {div, i} from "core/dom"
 import {Color} from "core/types"
 import {FontStyle, TextAlign, RoundingFunction} from "core/enums"
-import {isString} from "core/util/types"
+import {isNumber, isString} from "core/util/types"
 import {to_fixed} from "core/util/string"
 import {Model} from "../../../model"
 
@@ -268,15 +268,28 @@ export class DateFormatter extends StringFormatter {
     }
   }
 
-  doFormat(row: any, cell: any, value: any, columnDef: any, dataContext: any): string {
+  doFormat(row: any, cell: any, value: unknown, columnDef: any, dataContext: any): string {
+    let epoch: number | null
+    if (value === null || isNumber(value)) {
+      epoch = value
+    } else if (isString(value)) {
+      epoch = Number(value)
+      if (isNaN(epoch))
+        epoch = Date.parse(value)
+    } else if (value instanceof Date) {
+      epoch = value.valueOf()
+    } else
+      epoch = Number(value)
+
     const {nan_format} = this
-    value = isString(value) ? parseInt(value, 10) : value
+    const NaT = -9223372036854776
+
     let date: string
-    // Handle null, NaN and NaT
-    if ((value == null || isNaN(value) || value === -9223372036854776) && nan_format != null)
+    if (nan_format != null && (epoch == null || isNaN(epoch) || epoch == NaT))
       date = nan_format
     else
-      date = value == null ? '' : tz(value, this.getFormat())
+      date = epoch == null ? "" : tz(epoch, this.getFormat())
+
     return super.doFormat(row, cell, date, columnDef, dataContext)
   }
 }
