@@ -1,3 +1,4 @@
+import {expect} from "../unit/assertions"
 import {display, fig, row, column, grid} from "./_util"
 
 import {
@@ -14,7 +15,7 @@ import {
 } from "@bokehjs/models"
 
 import {Button, Select, MultiSelect, MultiChoice} from "@bokehjs/models/widgets"
-import {DataTable, TableColumn} from "@bokehjs/models/widgets/tables"
+import {DataTable, TableColumn, DateFormatter} from "@bokehjs/models/widgets/tables"
 
 import {Factor} from "@bokehjs/models/ranges/factor_range"
 
@@ -713,6 +714,29 @@ describe("Bug", () => {
       const choices_view = view.child_views[0] as MultiChoice["__view_type__"]
       (choices_view as any /*protected*/).choice_el.showDropdown()
       await defer()
+    })
+  })
+
+  describe("in issue #10749", () => {
+    it("prevents DataTable from correctly ordering rows and formatting string dates", async () => {
+      const indices = range(0, 22)
+      const source = new ColumnDataSource({data: {
+        dates: indices.map((i) => `2014-03-${i + 1}`),
+        downloads: indices.map((i) => i % 10),
+      }})
+
+      const columns = [
+        new TableColumn({field: "dates", title: "Date", formatter: new DateFormatter()}),
+        new TableColumn({field: "downloads", title: "Downloads"}),
+      ]
+
+      const table = new DataTable({source, columns, selectable: "checkbox", width: 300, height: 200})
+      const {view} = await display(table, [350, 250])
+
+      source.selected.indices = indices
+      await view.ready
+
+      expect(view.get_selected_rows()).to.be.equal(indices)
     })
   })
 
