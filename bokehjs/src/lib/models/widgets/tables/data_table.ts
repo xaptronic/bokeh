@@ -6,7 +6,7 @@ import {Grid as SlickGrid, DataProvider, SortColumn, OnSortEventArgs, OnSelected
 import * as p from "core/properties"
 import {uniqueId} from "core/util/string"
 import {isString, isNumber} from "core/util/types"
-import {some, range} from "core/util/array"
+import {some, range, sort_by} from "core/util/array"
 import {keys} from "core/util/object"
 import {logger} from "core/logging"
 import {BoxSizing} from "core/layout"
@@ -203,9 +203,8 @@ export class DataTableView extends WidgetView {
     if (this._in_selection_update)
       return
 
-    const {selected} = this.model.source
-
-    const permuted_indices = selected.indices.map((x: number) => this.data.index.indexOf(x)).sort()
+    const {indices} = this.model.source.selected
+    const permuted_indices = sort_by(indices.map((x) => this.data.index.indexOf(x)), (x) => x)
 
     this._in_selection_update = true
     this.grid.setSelectedRows(permuted_indices)
@@ -381,6 +380,10 @@ export class DataTableView extends WidgetView {
       (el as HTMLElement).style.height = "0px"
     }
     this.grid.resizeCanvas()
+  }
+
+  get_selected_rows(): number[] {
+    return this.grid.getSelectedRows()
   }
 }
 
