@@ -34,7 +34,8 @@ export abstract class RendererView extends View implements visuals.Renderable {
   connect_signals(): void {
     super.connect_signals()
     const {x_range_name, y_range_name} = this.model.properties
-    this.on_change([x_range_name, y_range_name], () => this._initialize_coordinates())
+    this.on_change([x_range_name, y_range_name], () => this._coordinates = this._initialize_coordinates())
+    this.connect(this.plot_view.frame.change, () => this._coordinates = this._initialize_coordinates())
   }
 
   protected _initialize_coordinates(): CoordinateTransform {

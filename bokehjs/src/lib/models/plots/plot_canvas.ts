@@ -491,22 +491,36 @@ export class PlotView extends LayoutDOMView implements Renderable {
   connect_signals(): void {
     super.connect_signals()
 
-    const {x_ranges, y_ranges} = this.frame
+    const {/*x_scale, y_scale, x_range, y_range,*/ extra_x_ranges, extra_y_ranges} = this.model.properties
+    this.on_change([/*x_scale, y_scale, x_range, y_range,*/ extra_x_ranges, extra_y_ranges], () => {
+      this.frame.extra_x_ranges = this.model.extra_x_ranges
+      this.frame.extra_y_ranges = this.model.extra_y_ranges
+      this.frame._configure_scales()
+      this.frame.change.emit()
+    })
 
+    const {above, below, left, right, center, renderers} = this.model.properties
+    const panels = [above, below, left, right, center]
+    this.on_change(renderers, async () => {
+      await this.build_renderer_views()
+    })
+    this.on_change(panels, async () => {
+      await this.build_renderer_views()
+      this.invalidate_layout()
+    })
+
+    this.connect(this.model.toolbar.properties.tools.change, async () => {
+      await this.build_renderer_views()
+      await this.build_tool_views()
+    })
+
+    const {x_ranges, y_ranges} = this.frame
     for (const [, range] of x_ranges) {
       this.connect(range.change, () => { this._needs_layout = true; this.request_paint("everything") })
     }
     for (const [, range] of y_ranges) {
       this.connect(range.change, () => { this._needs_layout = true; this.request_paint("everything") })
     }
-
-    const {above, below, left, right, center, renderers} = this.model.properties
-    this.on_change([above, below, left, right, center, renderers], async () => await this.build_renderer_views())
-
-    this.connect(this.model.toolbar.properties.tools.change, async () => {
-      await this.build_renderer_views()
-      await this.build_tool_views()
-    })
 
     this.connect(this.model.change, () => this.request_paint("everything"))
     this.connect(this.model.reset, () => this.reset())

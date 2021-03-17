@@ -9,6 +9,7 @@ import {FactorRange} from "../ranges/factor_range"
 import {BBox} from "core/util/bbox"
 import {entries, to_object} from "core/util/object"
 import {assert} from "core/util/assert"
+import {Signal0} from "core/signaling"
 
 type Ranges = {[key: string]: Range}
 
@@ -19,12 +20,14 @@ export class CartesianFrame {
     return this._bbox
   }
 
+  readonly change = new Signal0<this>(this, "change")
+
   constructor(private readonly in_x_scale: Scale,
               private readonly in_y_scale: Scale,
               readonly x_range: Range,
               readonly y_range: Range,
-              private readonly extra_x_ranges: Ranges = {},
-              private readonly extra_y_ranges: Ranges = {}) {
+              /*private readonly*/ public extra_x_ranges: Ranges = {},
+              /*private readonly*/ public extra_y_ranges: Ranges = {}) {
     assert(in_x_scale.source_range == null && in_x_scale.target_range == null)
     assert(in_y_scale.source_range == null && in_y_scale.target_range == null)
     this._configure_scales()
@@ -72,7 +75,7 @@ export class CartesianFrame {
     this._y_target = new Range1d({start: bbox.bottom, end: bbox.top})
   }
 
-  protected _configure_scales(): void {
+  /*protected*/ _configure_scales(): void {
     this._configure_frame_ranges()
 
     this._x_ranges = this._get_ranges(this.x_range, this.extra_x_ranges)
