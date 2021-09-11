@@ -111,6 +111,7 @@ __all__ = (
     'HatchPatternAbbreviation',
     'HoldPolicy',
     'HorizontalLocation',
+    'ImageOrigin',
     'JitterRandomDistribution',
     'LatLon',
     'LegendClickPolicy',
@@ -342,6 +343,9 @@ HoldPolicy = enumeration(HoldPolicyType)
 
 #: Specify a horizontal location in plot layouts
 HorizontalLocation = enumeration("left", "right")
+
+#: Defines the coordinate space within an image
+ImageOrigin = enumeration("bottom_left", "top_left", "bottom_right", "top_right")
 
 #: Specify a distribution to use for the Jitter class
 JitterRandomDistributionType = Literal["uniform", "normal"]
