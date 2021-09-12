@@ -556,6 +556,10 @@ class _ImageCommon(HasProps):
     Defines the coordinate space of an image.
     """)
 
+    anchor = Enum(Anchor, help="""
+    Position of the image should be anchored at the `x`, `y` coordinates.
+    """)
+
 class Image(XYGlyph, _ImageCommon):
     ''' Render images given as scalar data together with a color mapper.
 
@@ -641,9 +645,6 @@ class Image(XYGlyph, _ImageCommon):
         The color mapping step happens on the client.
     """)
 
-    # TODO: (bev) support anchor property for Image
-    # ref: https://github.com/bokeh/bokeh/issues/1763
-
 class ImageRGBA(XYGlyph, _ImageCommon):
     ''' Render images given as RGBA data.
 
@@ -691,9 +692,6 @@ class ImageRGBA(XYGlyph, _ImageCommon):
     This setting may be useful if pixel rounding errors are causing
     images to have a gap between them, when they should appear flush.
     """)
-
-    # TODO: (bev) support anchor property for ImageRGBA
-    # ref: https://github.com/bokeh/bokeh/issues/1763
 
 class ImageURL(XYGlyph):
     ''' Render images loaded from given URLs.
