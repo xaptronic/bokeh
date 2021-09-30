@@ -97,6 +97,16 @@ export class CircleView extends XYGlyphView {
     }
   }
 
+  protected override _bounds({x0, x1, y0, y1}: Rect): Rect {
+    const {max_radius} = this
+    return {
+      x0: x0 - max_radius,
+      x1: x1 + max_radius,
+      y0: y0 - max_radius,
+      y1: y1 + max_radius,
+    }
+  }
+
   protected override _mask_data(): Indices {
     const {frame} = this.renderer.plot_view
 
