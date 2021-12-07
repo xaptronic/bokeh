@@ -18,8 +18,14 @@ type Constructor<T> = Function & {prototype: T}
 
 export namespace Kinds {
   export class Any extends Kind<any> {
+    readonly [Symbol.toStringTag] = "Any"
+
     valid(_value: unknown): _value is any {
       return true
+    }
+
+    override toString(): string {
+      return "Any"
     }
   }
 
@@ -27,11 +33,19 @@ export namespace Kinds {
     valid(_value: unknown): _value is unknown {
       return true
     }
+
+    override toString(): string {
+      return "Unknown"
+    }
   }
 
   export class Boolean extends Kind<boolean> {
     valid(value: unknown): value is boolean {
       return tp.isBoolean(value)
+    }
+
+    override toString(): string {
+      return "Boolean"
     }
   }
 
@@ -43,11 +57,22 @@ export namespace Kinds {
     valid(value: unknown): value is ObjType {
       return value instanceof this.obj_type
     }
+
+    override toString(): string {
+      const tp = this.obj_type
+      // NOTE: `__name__` is injected by a compiler transform
+      const name = (tp as any).__name__ ?? tp.toString()
+      return `Ref(${name})`
+    }
   }
 
   export class AnyRef<ObjType extends object> extends Kind<ObjType> {
     valid(value: unknown): value is ObjType {
       return tp.isObject(value)
+    }
+
+    override toString(): string {
+      return "AnyRef"
     }
   }
 
@@ -55,17 +80,29 @@ export namespace Kinds {
     valid(value: unknown): value is number {
       return tp.isNumber(value)
     }
+
+    override toString(): string {
+      return "Number"
+    }
   }
 
   export class Int extends Number {
     override valid(value: unknown): value is number {
       return super.valid(value) && tp.isInteger(value)
     }
+
+    override toString(): string {
+      return "Int"
+    }
   }
 
   export class Percent extends Number {
     override valid(value: unknown): value is number {
       return super.valid(value) && 0 <= value && value <= 1
+    }
+
+    override toString(): string {
+      return "Percent"
     }
   }
 
@@ -79,6 +116,10 @@ export namespace Kinds {
 
     valid(value: unknown): value is T[number] {
       return this.types.some((type) => type.valid(value))
+    }
+
+    override toString(): string {
+      return `Or(${this.types.map((type) => type.toString()).join(", ")})`
     }
   }
 
@@ -100,6 +141,10 @@ export namespace Kinds {
       }
 
       return true
+    }
+
+    override toString(): string {
+      return `Tuple(${this.types.map((type) => type.toString()).join(", ")})`
     }
   }
 
@@ -132,11 +177,19 @@ export namespace Kinds {
 
       return true
     }
+
+    override toString(): string {
+      return "Struct"
+    }
   }
 
   export class Arrayable extends Kind<types.Arrayable> {
     valid(value: unknown): value is types.Arrayable {
       return tp.isArray(value) || tp.isTypedArray(value) // TODO: too specific
+    }
+
+    override toString(): string {
+      return "Arrayable"
     }
   }
 
@@ -148,11 +201,19 @@ export namespace Kinds {
     valid(value: unknown): value is ItemType[] {
       return tp.isArray(value) && value.every((item) => this.item_type.valid(item))
     }
+
+    override toString(): string {
+      return `Array(${this.item_type.toString()})`
+    }
   }
 
   export class Null extends Kind<null> {
     valid(value: unknown): value is null {
       return value === null
+    }
+
+    override toString(): string {
+      return "Null"
     }
   }
 
@@ -164,6 +225,10 @@ export namespace Kinds {
     valid(value: unknown): value is BaseType | null {
       return value === null || this.base_type.valid(value)
     }
+
+    override toString(): string {
+      return `Nullable(${this.base_type.toString()})`
+    }
   }
 
   export class Opt<BaseType> extends Kind<BaseType | undefined> {
@@ -174,11 +239,19 @@ export namespace Kinds {
     valid(value: unknown): value is BaseType | undefined {
       return value === undefined || this.base_type.valid(value)
     }
+
+    override toString(): string {
+      return `Opt(${this.base_type.toString()})`
+    }
   }
 
   export class String extends Kind<string> {
     valid(value: unknown): value is string {
       return tp.isString(value)
+    }
+
+    override toString(): string {
+      return "String"
     }
   }
 
@@ -189,6 +262,10 @@ export namespace Kinds {
 
     override valid(value: unknown): value is string {
       return super.valid(value) && this.regex.test(value)
+    }
+
+    override toString(): string {
+      return `Regex(${this.regex.toString()})`
     }
   }
 
@@ -206,6 +283,10 @@ export namespace Kinds {
 
     *[Symbol.iterator](): Generator<T, void, undefined> {
       yield* this.values
+    }
+
+    override toString(): string {
+      return `Enum(${[...this.values].map((v) => v.toString()).join(", ")})`
     }
   }
 
@@ -229,6 +310,10 @@ export namespace Kinds {
 
       return true
     }
+
+    override toString(): string {
+      return `Dict(${this.item_type.toString()})`
+    }
   }
 
   export class Map<KeyType, ItemType> extends Kind<ESMap<KeyType, ItemType>> {
@@ -248,17 +333,29 @@ export namespace Kinds {
 
       return true
     }
+
+    override toString(): string {
+      return `Map(${this.key_type.toString()}, ${this.item_type.toString()})`
+    }
   }
 
   export class Color extends Kind<types.Color> {
     valid(value: unknown): value is types.Color {
       return is_Color(value)
     }
+
+    override toString(): string {
+      return "Color"
+    }
   }
 
   export class Function<Args extends unknown[], Ret> extends Kind<(...args: Args) => Ret> {
     valid(value: unknown): value is this["__type__"] {
       return tp.isFunction(value)
+    }
+
+    override toString(): string {
+      return "Function(...)"
     }
   }
 }
