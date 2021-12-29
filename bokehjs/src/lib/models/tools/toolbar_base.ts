@@ -1,5 +1,5 @@
 import {logger} from "core/logging"
-import {classes, div, a, Keys} from "core/dom"
+import {div, a, Keys} from "core/dom"
 import {build_views, remove_views} from "core/build_views"
 import * as p from "core/properties"
 import {DOMComponentView} from "core/dom_view"
@@ -126,7 +126,7 @@ export class ToolbarBaseView extends DOMComponentView {
 
   protected _on_visible_change(): void {
     const {visible} = this._toolbar_view_model
-    classes(this.el).toggle(toolbars.hidden, !visible)
+    this.el.classList.toggle(toolbars.hidden, !visible)
   }
 
   override render(): void {
