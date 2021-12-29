@@ -13,7 +13,6 @@ import {Toolbar} from "./toolbar"
 import {ToolProxy} from "./tool_proxy"
 
 import {LayoutDOM, LayoutDOMView} from "../layouts/layout_dom"
-import {ContentBox} from "core/layout"
 
 export namespace ProxyToolbar {
   export type Attrs = p.AttrsOf<Props>
@@ -161,26 +160,10 @@ export class ToolbarBoxView extends LayoutDOMView {
     return [this.model.toolbar as any] // XXX
   }
 
-  override _update_layout(): void {
-    this.layout = new ContentBox(this.child_views[0].el)
-
-    const {toolbar} = this.model
-
-    if (toolbar.horizontal) {
-      this.layout.set_sizing({
-        width_policy: "fit", min_width: 100, height_policy: "fixed",
-      })
-    } else {
-      this.layout.set_sizing({
-        width_policy: "fixed", height_policy: "fit", min_height: 100,
-      })
-    }
-  }
-
   override after_layout(): void {
     super.after_layout()
     const toolbar_view = this.child_views[0] as any as ToolbarBaseView
-    toolbar_view.layout.bbox = this.layout.bbox
+    //toolbar_view.layout.bbox = this.layout.bbox
     toolbar_view.render() // render the second time to revise overflow
   }
 }

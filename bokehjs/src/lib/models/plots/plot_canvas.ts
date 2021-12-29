@@ -248,6 +248,8 @@ export class PlotView extends LayoutDOMView implements Renderable {
   }
 
   override _update_layout(): void {
+    super._update_layout()
+
     this.layout = new BorderLayout()
     this.layout.set_sizing(this.box_sizing())
 
@@ -460,7 +462,7 @@ export class PlotView extends LayoutDOMView implements Renderable {
     }
 
     if (needs_layout())
-      this.root.compute_layout()
+      this./*root.*/compute_layout()
   }
 
   get_renderer_views(): RendererView[] {

@@ -427,15 +427,6 @@ class Row(Box):
     that is a sequence, or using the ``children`` keyword argument.
     '''
 
-    cols = Either(QuickTrackSizing, Dict(IntOrString, ColSizing), default="auto", help="""
-    Describes how the component should maintain its columns' widths.
-
-    .. note::
-        This is an experimental feature and may change in future. Use it at your
-        own discretion.
-
-    """)
-
     def _sphinx_height_hint(self) -> int|None:
         if any(x._sphinx_height_hint() is None for x in self.children):
             return None
@@ -447,15 +438,6 @@ class Column(Box):
     Children can be specified as positional arguments, as a single argument
     that is a sequence, or using the ``children`` keyword argument.
     '''
-
-    rows = Either(QuickTrackSizing, Dict(IntOrString, RowSizing), default="auto", help="""
-    Describes how the component should maintain its rows' heights.
-
-    .. note::
-        This is an experimental feature and may change in future. Use it at your
-        own discretion.
-
-    """)
 
     def _sphinx_height_hint(self) -> int|None:
         if any(x._sphinx_height_hint() is None for x in self.children):
