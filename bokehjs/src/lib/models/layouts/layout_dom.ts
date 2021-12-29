@@ -17,9 +17,6 @@ import {SerializableState} from "core/view"
 export abstract class LayoutDOMView extends DOMComponentView {
   override model: LayoutDOM
 
-  override root: LayoutDOMView
-  override readonly parent: DOMComponentView
-
   override el: HTMLElement
 
   protected _child_views: Map<LayoutDOM, LayoutDOMView>

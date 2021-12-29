@@ -2,7 +2,7 @@ import {logger} from "core/logging"
 import {div, a, Keys} from "core/dom"
 import {build_views, remove_views} from "core/build_views"
 import * as p from "core/properties"
-import {DOMComponentView} from "core/dom_view"
+import {DOMView, DOMComponentView} from "core/dom_view"
 import {Logo, Location} from "core/enums"
 import {EventType} from "core/ui_events"
 import {some, every} from "core/util/array"
@@ -172,7 +172,8 @@ export class ToolbarBaseView extends DOMComponentView {
 
     let overflowed = false
     const overflow_size = 15
-    this.root.children_el.appendChild(this._overflow_menu.el)
+    const target_el = this.root instanceof DOMView ? this.root.children_el : document.body
+    target_el.appendChild(this._overflow_menu.el)
     const overflow_el = div({class: tools.tool_overflow, tabIndex: 0}, horizontal ? "⋮" : "⋯")
     this._overflow_el = overflow_el
     const toggle_menu = () => {
