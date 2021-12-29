@@ -1,10 +1,11 @@
 import {expect} from "assertions"
 
-import {HasProps} from "@bokehjs/core/has_props"
+import {Model} from "@bokehjs/model"
 import {Serializer} from "@bokehjs/core/serializer"
 import {is_equal} from "@bokehjs/core/util/eq"
 import {Document} from "@bokehjs/document/document"
 import * as events from "@bokehjs/document/events"
+import * as p from "@bokehjs/core/properties"
 
 const EVENTS = [
 //  "ColumnDataChangedEvent", // Not implemented yet
@@ -18,10 +19,21 @@ const EVENTS = [
   "RootRemovedEvent",
 ]
 
-class TestModel extends HasProps {}
+class TestModel extends Model {}
 
-class TestModelWithProps extends HasProps {
-  foo: number[]
+namespace TestModelWithProps {
+  export type Attrs = p.AttrsOf<Props>
+  export type Props = Model.Props & {foo: p.Property<number[]>}
+}
+
+interface TestModelWithProps extends TestModelWithProps.Attrs {}
+
+class TestModelWithProps extends Model {
+  override properties: TestModelWithProps.Props
+
+  constructor(attrs?: Partial<TestModelWithProps.Attrs>) {
+    super(attrs)
+  }
 
   static {
     this.define<any>(({Number, Array}) => ({

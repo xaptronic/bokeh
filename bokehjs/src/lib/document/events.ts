@@ -1,6 +1,7 @@
 import {Document} from "./document"
 import {Data} from "core/types"
 import {HasProps} from "core/has_props"
+import {Model} from "../model"
 import {Ref} from "core/util/refs"
 import {PatchSet} from "models/sources/column_data_source"
 import {equals, Equatable, Comparator} from "core/util/eq"
@@ -223,7 +224,7 @@ export class TitleChangedEvent extends DocumentChangedEvent {
 
 export class RootAddedEvent extends DocumentChangedEvent {
 
-  constructor(document: Document, readonly model: HasProps, readonly setter_id?: string) {
+  constructor(document: Document, readonly model: Model, readonly setter_id?: string) {
     super(document)
   }
 
@@ -243,7 +244,7 @@ export class RootAddedEvent extends DocumentChangedEvent {
 
 export class RootRemovedEvent extends DocumentChangedEvent {
 
-  constructor(document: Document, readonly model: HasProps, readonly setter_id?: string) {
+  constructor(document: Document, readonly model: Model, readonly setter_id?: string) {
     super(document)
   }
 
